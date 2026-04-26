@@ -3,8 +3,6 @@ __pycache__/
 *.pyc
 .DS_Store
 service_account.json
-dataset_*.json
-raw_listing.json
-owner_leads.csv
-debug_listing.py
-pm leads context.pdf
+*.csv
+*.json
+!zillow_detail_scraper_sample.json
