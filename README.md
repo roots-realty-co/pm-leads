@@ -9,9 +9,10 @@ Scrape Zillow rental listings, identify DIY landlords (not using a PM company), 
 
 **Current pipeline:** Apify → Google Sheet → manual texting
 
+**Working:** Scraper producing owner leads with phone numbers (49 leads from last run on 2026-04-26).
+
 **Blockers**
-- `isListedByOwner` filter in `zillow_scraper.py` was returning 0 results — filter logic has been updated but not yet re-run to confirm it works.
-- No enrichment solution found yet. We have owner phone numbers from Zillow but cannot reliably reverse-lookup an email from a phone number. Clay, and others tested so far, have poor match rates for this specific input.
+- No enrichment solution found yet. We have owner phone numbers from Zillow but cannot reliably reverse-lookup an email from a phone number. Clay and others tested so far have poor match rates for this specific input.
 
 **Future pipeline (aspirational):** Apify → Supabase → n8n → enrichment → Instantly.ai (cold email)
 
@@ -42,9 +43,8 @@ Find Denver residential real estate agents on LinkedIn, connect via automated ou
 ## Next Steps
 
 **Channel 1**
-1. Fix `isListedByOwner` filter
-2. Continue testing enrichment tools for phone to email lookup
-3. Research A2P 10DLC compliance if pivoting to SMS outreach
+1. Continue testing enrichment tools for phone to email lookup
+2. Research A2P 10DLC compliance if pivoting to SMS outreach
 
 **Channel 2**
 1. Monitor Heyreach campaign acceptance and reply rates
