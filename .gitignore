@@ -1,4 +1,7 @@
 .env
-_pycache_/
-*pyc
+__pycache__/
+*.pyc
 .DS_Store
+service_account.json
+dataset_*.json
+raw_listing.json
