@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pdftotext \"/Users/ozzy/Downloads/pm leads context.pdf\" -)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"from pypdf import PdfReader; r = PdfReader\\('/Users/ozzy/Downloads/pm leads context.pdf'\\); [print\\(p.extract_text\\(\\)\\) for p in r.pages]\")",
+      "Bash(pdftotext --version)",
+      "Read(//usr/local/**)",
+      "Bash(pip3 list *)",
+      "Bash(pip3 install *)"
+    ]
+  }
+}
