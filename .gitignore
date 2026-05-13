@@ -6,3 +6,5 @@ service_account.json
 *.csv
 *.json
 !zillow_detail_scraper_sample.json
+newsletter/package/
+newsletter/*.zip
