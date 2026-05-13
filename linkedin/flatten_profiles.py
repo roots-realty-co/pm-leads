@@ -1,7 +1,9 @@
 import json
 import csv
+import glob
+import os
 
-INPUT_FILE = "dataset_linkedin-profile-search_2026-04-26_16-20-48-983.json"
+INPUT_PATTERN = "dataset_linkedin-profile-search_*.json"
 OUTPUT_FILE = "heyreach_import.csv"
 
 EXCLUDE_KEYWORDS = [
@@ -51,16 +53,31 @@ def flatten(profile):
         "Company": current[0].get("companyName", "") if current else "",
     }
 
-with open(INPUT_FILE) as f:
-    profiles = json.load(f)
+input_files = glob.glob(INPUT_PATTERN)
+profiles = []
+for path in input_files:
+    with open(path) as f:
+        profiles.extend(json.load(f))
 
 filtered = [flatten(p) for p in profiles if is_residential_agent(p)]
 
-with open(OUTPUT_FILE, "w", newline="") as f:
-    writer = csv.DictWriter(f, fieldnames=filtered[0].keys())
-    writer.writeheader()
-    writer.writerows(filtered)
+seen = set()
+deduped = []
+for row in filtered:
+    url = row["LinkedIn URL"]
+    if url not in seen:
+        seen.add(url)
+        deduped.append(row)
 
-print(f"{len(profiles)} total profiles")
-print(f"{len(filtered)} after filtering")
+with open(OUTPUT_FILE, "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=deduped[0].keys())
+    writer.writeheader()
+    writer.writerows(deduped)
+
+for path in input_files:
+    os.remove(path)
+
+print(f"{len(input_files)} input file(s), {len(profiles)} total profiles")
+print(f"{len(filtered)} after filtering, {len(deduped)} after deduplication")
 print(f"Saved to {OUTPUT_FILE}")
+print(f"Deleted {len(input_files)} JSON file(s)")
