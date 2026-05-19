@@ -7,7 +7,19 @@
       "Bash(pdftotext --version)",
       "Read(//usr/local/**)",
       "Bash(pip3 list *)",
-      "Bash(pip3 install *)"
+      "Bash(pip3 install *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)",
+      "Bash(git branch *)",
+      "WebSearch",
+      "Bash(git mv *)",
+      "mcp__mcp-registry__search_mcp_registry",
+      "mcp__mcp-registry__list_connectors",
+      "Bash(brew list *)"
     ]
   }
 }

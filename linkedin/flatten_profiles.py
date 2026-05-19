@@ -2,21 +2,27 @@ import json
 import csv
 import glob
 import os
+import sys
 
 INPUT_PATTERN = "dataset_linkedin-profile-search_*.json"
-OUTPUT_FILE = "heyreach_import.csv"
+OUTPUT_FILE = f"heyreach_import_{__import__('datetime').date.today().strftime('%Y-%m-%d')}.csv"
 
-EXCLUDE_KEYWORDS = [
+# Pass --mode as argument, e.g. python3 flatten_profiles.py --mode loan_brokers
+# Default mode is agents (residential real estate agents)
+MODE = "agents"
+if "--mode" in sys.argv:
+    idx = sys.argv.index("--mode")
+    if idx + 1 < len(sys.argv):
+        MODE = sys.argv[idx + 1]
+
+# --- Agent filter (residential real estate agents) ---
+AGENT_EXCLUDE_KEYWORDS = [
     "commercial", "business broker", "mergers", "acquisitions",
     "mortgage", "lending", "capital", "healthcare", "industrial",
     "business advisor", "photographer", "marketing", "administrative"
 ]
-
-EXCLUDE_COMPANIES = [
-    "acorn and oak"
-]
-
-INCLUDE_KEYWORDS = [
+AGENT_EXCLUDE_COMPANIES = ["acorn and oak"]
+AGENT_INCLUDE_KEYWORDS = [
     "realtor", "real estate agent", "broker associate", "listing agent",
     "buyer's agent", "residential", "keller williams", "re/max", "remax",
     "coldwell", "kentwood", "exit realty", "century 21", "compass",
@@ -25,22 +31,32 @@ INCLUDE_KEYWORDS = [
 
 def is_residential_agent(profile):
     headline = (profile.get("headline") or "").lower()
-    position = ""
-    company = ""
     current = profile.get("currentPosition") or []
-    if current:
-        position = (current[0].get("position") or "").lower()
-        company = (current[0].get("companyName") or "").lower()
-
+    position = (current[0].get("position") or "").lower() if current else ""
+    company = (current[0].get("companyName") or "").lower() if current else ""
     text = f"{headline} {position} {company}"
-
-    if any(kw in text for kw in EXCLUDE_KEYWORDS):
+    if any(kw in text for kw in AGENT_EXCLUDE_KEYWORDS):
         return False
-    if any(co in company for co in EXCLUDE_COMPANIES):
+    if any(co in company for co in AGENT_EXCLUDE_COMPANIES):
         return False
-    if any(kw in text for kw in INCLUDE_KEYWORDS):
+    if any(kw in text for kw in AGENT_INCLUDE_KEYWORDS):
         return True
     return False
+
+# --- Passthrough filter (Apify already filtered by industry ID) ---
+def passthrough(profile):
+    return True
+
+FILTERS = {
+    "agents": is_residential_agent,
+    "loan_brokers": passthrough,
+    "accounting": passthrough,
+    "law": passthrough,
+    "investment_advice": passthrough,
+}
+
+filter_fn = FILTERS.get(MODE, passthrough)
+print(f"Mode: {MODE}")
 
 def flatten(profile):
     current = profile.get("currentPosition") or []
@@ -59,7 +75,7 @@ for path in input_files:
     with open(path) as f:
         profiles.extend(json.load(f))
 
-filtered = [flatten(p) for p in profiles if is_residential_agent(p)]
+filtered = [flatten(p) for p in profiles if filter_fn(p)]
 
 seen = set()
 deduped = []
